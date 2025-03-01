@@ -3,7 +3,7 @@ on:
   push:
 
 env:
-  GODOT_VERSION: 4.3.0
+  GODOT_VERSION: 4.3
   EXPORT_NAME: web-export
 
 jobs:
