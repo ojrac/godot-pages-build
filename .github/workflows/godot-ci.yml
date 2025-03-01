@@ -1,6 +1,8 @@
 name: "godot-ci export"
 on:
   workflow_dispatch:
+permissions:
+  contents: write
 
 env:
   GODOT_VERSION: 4.3
