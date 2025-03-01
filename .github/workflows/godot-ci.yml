@@ -3,7 +3,7 @@ on:
   workflow_dispatch:
 
 env:
-  GODOT_VERSION: 4.3
+  GODOT_VERSION: 4.3.0
   EXPORT_NAME: web-export
 
 jobs:
@@ -17,6 +17,7 @@ jobs:
         uses: actions/checkout@v1
       - name: Setup
         run: |
+          ls /root/.local/share/godot/templates/
           mkdir -v -p build/web ~/.local/share/godot/templates
           mv /root/.local/share/godot/templates/${GODOT_VERSION}.stable ~/.local/share/godot/templates/${GODOT_VERSION}.stable
       - name: Web Build
