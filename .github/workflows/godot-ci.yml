@@ -11,13 +11,12 @@ env:
   EXPORT_NAME: web-export
 
 jobs:
-          
   export-web:
     name: Web Export
     runs-on: ubuntu-latest
     environment: manual-approval
     container:
-      image: docker://barichello/godot-ci:3.2.1
+      image: docker://barichello/godot-ci:${GODOT_VERSION}
     steps:
       - name: Checkout
         uses: actions/checkout@v1
