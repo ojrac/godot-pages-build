@@ -2,6 +2,10 @@ name: "godot-ci export"
 on:
   push:
 
+# To make builds only run manually, create an environment named "manual-approval"
+# with a required reviewer (you can use a team here). Instructions:
+# https://docs.github.com/en/actions/managing-workflow-runs-and-deployments/managing-deployments/managing-environments-for-deployment#creating-an-environment
+
 env:
   GODOT_VERSION: 4.3
   EXPORT_NAME: web-export
@@ -11,6 +15,7 @@ jobs:
   export-web:
     name: Web Export
     runs-on: ubuntu-latest
+    environment: manual-approval
     container:
       image: docker://barichello/godot-ci:3.2.1
     steps:
