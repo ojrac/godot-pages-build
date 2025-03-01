@@ -1,10 +1,6 @@
 name: "godot-ci export"
 on:
-  push:
-
-# To make builds only run manually, create an environment named "manual-approval"
-# with a required reviewer (you can use a team here). Instructions:
-# https://docs.github.com/en/actions/managing-workflow-runs-and-deployments/managing-deployments/managing-environments-for-deployment#creating-an-environment
+  workflow_dispatch:
 
 env:
   GODOT_VERSION: 4.3
