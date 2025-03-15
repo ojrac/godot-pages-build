@@ -1,4 +1,4 @@
-name: "godot pages build and release"
+name: "Build and Publish to Releases"
 on:
   workflow_dispatch:
     inputs:

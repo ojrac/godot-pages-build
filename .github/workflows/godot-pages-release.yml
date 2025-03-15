@@ -1,4 +1,4 @@
-name: "godot pages build and release"
+name: "Build and Publish to GitHub Pages"
 on:
   workflow_dispatch:
 permissions:
