@@ -1,4 +1,4 @@
-name: "godot-ci export"
+name: "godot pages build and release"
 on:
   workflow_dispatch:
 permissions:
