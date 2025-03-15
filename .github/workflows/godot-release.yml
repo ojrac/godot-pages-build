@@ -46,10 +46,13 @@ jobs:
         run: |
           cd build/windows
           zip -r ../../${{ env.PROJECT_NAME }}-${{ inputs.version }}.zip .
+      - name: Set Artifact UUID
+        id: generate-uuid
+        uses: filipstefansson/uuid-action@v1
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ env.PROJECT_NAME }}
+          name: ${{ env.PROJECT_NAME }}-${{ steps.generate-uuid.outputs.uuid }}
           path: ${{ env.PROJECT_NAME }}.zip
 
   release:
@@ -61,7 +64,7 @@ jobs:
       - name: Download artifact
         uses: actions/download-artifact@v4
         with:
-          name: ${{ env.PROJECT_NAME }}
+          name: ${{ env.PROJECT_NAME }}-${{ steps.generate-uuid.outputs.uuid }}
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
