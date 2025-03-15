@@ -42,9 +42,10 @@ jobs:
           EXPORT_DIR="$(readlink -f build)"
           cd $PROJECT_PATH
           godot --headless --verbose --export-release "${{ env.EXPORT_NAME }}" "$EXPORT_DIR/windows"
-          zip -r ${{ env.PROJECT_NAME }}.zip $EXPORT_DIR/windows
+      - name: Zip artifacts
+        run: zip -r ${{ env.PROJECT_NAME }}.zip $EXPORT_DIR/windows
       - name: Upload artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: ${{ env.PROJECT_NAME }}
           path: ${{ env.PROJECT_NAME }}.zip
@@ -56,7 +57,7 @@ jobs:
       contents: write
     steps:
       - name: Download artifact
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: ${{ env.PROJECT_NAME }}
       - name: Create Release
