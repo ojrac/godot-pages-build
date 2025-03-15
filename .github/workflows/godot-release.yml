@@ -1,0 +1,85 @@
+name: "godot pages build and release"
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: The version number to tag (e.g. 1.0.3)
+        required: true
+        type: string
+      revision:
+        description: The revision of the project to release (defaults to current)
+        type: string
+      
+permissions:
+  contents: write
+
+env:
+  PROJECT_NAME: "ExportTest"
+  GODOT_VERSION: 4.4
+  EXPORT_NAME: Windows
+  PROJECT_PATH: .
+  REVISION: ${{ inputs.revision || github.sha }}
+
+jobs:
+  export:
+    name: Godot Export
+    runs-on: ubuntu-20.04
+    container:
+      image: docker://barichello/godot-ci:4.4
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ env.REVISION }}
+          lfs: true
+      - name: Setup
+        run: |
+          mkdir -v -p ~/.local/share/godot/export_templates/
+          mv /root/.local/share/godot/export_templates/${GODOT_VERSION}.stable ~/.local/share/godot/export_templates/${GODOT_VERSION}.stable
+      - name: Windows Build
+        run: |
+          mkdir -v -p build/windows
+          EXPORT_DIR="$(readlink -f build)"
+          cd $PROJECT_PATH
+          godot --headless --verbose --export-release "${{ env.EXPORT_NAME }}" "$EXPORT_DIR/windows"
+      - name: Zip artifacts
+        run: zip -r ${{ env.PROJECT_NAME }}.zip $EXPORT_DIR/windows
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ env.PROJECT_NAME }}
+          path: ${{ env.PROJECT_NAME }}.zip
+
+  release:
+    needs: [export]
+    runs-on: ubuntu-20.04
+    permissions:
+      contents: write
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: ${{ env.PROJECT_NAME }}
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ inputs.version }}
+          release_name: ${{ inputs.version }}
+          body: ""
+          draft: false
+          prerelease: false
+      - name: Upload Release Asset
+        id: upload_release_asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ${{ env.PROJECT_NAME }}.zip
+          asset_name: ${{ env.PROJECT_NAME }}.zip
+          asset_content_type: application/zip
+
+
