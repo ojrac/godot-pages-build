@@ -43,7 +43,9 @@ jobs:
           cd $PROJECT_PATH
           godot --headless --verbose --export-release "${{ env.EXPORT_NAME }}" "$EXPORT_DIR/windows/${{ env.PROJECT_NAME }}.exe"
       - name: Zip artifacts
-        run: zip -r ${{ env.PROJECT_NAME }}.zip build/windows
+        run: |
+          cd build/windows
+          zip -r ../../${{ env.PROJECT_NAME }}.zip .
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
