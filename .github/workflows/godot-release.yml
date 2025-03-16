@@ -43,7 +43,7 @@ jobs:
           mkdir -v -p build/windows
           EXPORT_DIR="$(readlink -f build)"
           cd $PROJECT_PATH
-          godot --headless --verbose --export-release "${{ env.EXPORT_NAME_WIN }}" "$EXPORT_DIR/windows/${{ env.PROJECT_NAME }}-${{inputs.version}}.exe"
+          godot --headless --verbose --export-release "${{ env.EXPORT_NAME_WIN }}" "$EXPORT_DIR/windows/${{ env.PROJECT_NAME }}-windows-${{inputs.version}}.exe"
       # Not necessary if you embed a pck. Consider changing above to:
       #godot --headless --verbose --export-release "${{ env.EXPORT_NAME_WIN }}" "$EXPORT_DIR/windows/${{ env.PROJECT_NAME }}.exe"
       #- name: Zip Windows artifacts
