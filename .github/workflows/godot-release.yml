@@ -43,11 +43,13 @@ jobs:
           mkdir -v -p build/windows
           EXPORT_DIR="$(readlink -f build)"
           cd $PROJECT_PATH
-          godot --headless --verbose --export-release "${{ env.EXPORT_NAME_WIN }}" "$EXPORT_DIR/windows/${{ env.PROJECT_NAME }}.exe"
-      - name: Zip Windows artifacts
-        run: |
-          cd build/windows
-          zip -r ../../${{ env.PROJECT_NAME }}-${{ inputs.version }}.zip .
+          godot --headless --verbose --export-release "${{ env.EXPORT_NAME_WIN }}" "$EXPORT_DIR/windows/${{ env.PROJECT_NAME }}-${{inputs.version}}.exe"
+      # Not necessary if you embed a pck. Consider changing above to:
+      #godot --headless --verbose --export-release "${{ env.EXPORT_NAME_WIN }}" "$EXPORT_DIR/windows/${{ env.PROJECT_NAME }}.exe"
+      #- name: Zip Windows artifacts
+      #  run: |
+      #    cd build/windows
+      #    zip -r ../../${{ env.PROJECT_NAME }}-${{ inputs.version }}.zip .
 
       - name: MacOS Build
         run: |
@@ -78,8 +80,11 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ${{ env.PROJECT_NAME }}-windows-${{ inputs.version }}.zip
-          asset_name: ${{ env.PROJECT_NAME }}-windows-${{ inputs.version }}.zip
+          # alternative: zipped
+          #asset_path: ${{ env.PROJECT_NAME }}-windows-${{ inputs.version }}.zip
+          #asset_name: ${{ env.PROJECT_NAME }}-windows-${{ inputs.version }}.zip
+          asset_path: build/windows/${{ env.PROJECT_NAME }}-windows-${{ inputs.version }}.exe
+          asset_name: ${{ env.PROJECT_NAME }}-windows-${{ inputs.version }}.exe
           asset_content_type: application/zip
       - name: Upload MacOS Release Asset
         id: upload_release_asset_macos
@@ -88,7 +93,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ${{ env.PROJECT_NAME }}-macos-${{ inputs.version }}.zip
+          asset_path: build/macos/${{ env.PROJECT_NAME }}-macos-${{ inputs.version }}.zip
           asset_name: ${{ env.PROJECT_NAME }}-macos-${{ inputs.version }}.zip
           asset_content_type: application/zip
 
