@@ -16,7 +16,8 @@ permissions:
 env:
   PROJECT_NAME: "ExportTest"
   GODOT_VERSION: 4.4
-  EXPORT_NAME: Windows
+  EXPORT_NAME_WIN: "Windows Desktop"
+  EXPORT_NAME_MAC: "macOS"
   PROJECT_PATH: .
   REVISION: ${{ inputs.revision || github.sha }}
 
@@ -36,16 +37,29 @@ jobs:
         run: |
           mkdir -v -p ~/.local/share/godot/export_templates/
           mv /root/.local/share/godot/export_templates/${GODOT_VERSION}.stable ~/.local/share/godot/export_templates/${GODOT_VERSION}.stable
+
       - name: Windows Build
         run: |
           mkdir -v -p build/windows
           EXPORT_DIR="$(readlink -f build)"
           cd $PROJECT_PATH
-          godot --headless --verbose --export-release "${{ env.EXPORT_NAME }}" "$EXPORT_DIR/windows/${{ env.PROJECT_NAME }}.exe"
-      - name: Zip artifacts
+          godot --headless --verbose --export-release "${{ env.EXPORT_NAME_WIN }}" "$EXPORT_DIR/windows/${{ env.PROJECT_NAME }}.exe"
+      - name: Zip Windows artifacts
         run: |
           cd build/windows
           zip -r ../../${{ env.PROJECT_NAME }}-${{ inputs.version }}.zip .
+
+      - name: MacOS Build
+        run: |
+          mkdir -v -p build/macos
+          EXPORT_DIR="$(readlink -f build)"
+          cd $PROJECT_PATH
+          godot --headless --verbose --export-release "${{ env.EXPORT_NAME_MAC }}" "$EXPORT_DIR/macos/${{ env.PROJECT_NAME }}-osx-${{ inputs.version }}.zip"
+      #- name: Zip MacOS artifacts
+      #  run: |
+      #    cd build/macos
+      #    zip -r ../../${{ env.PROJECT_NAME }}-osx-${{ inputs.version }}.zip .
+
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
@@ -57,15 +71,25 @@ jobs:
           body: ""
           draft: false
           prerelease: false
-      - name: Upload Release Asset
-        id: upload_release_asset
+      - name: Upload Windows Release Asset
+        id: upload_release_asset_win
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ${{ env.PROJECT_NAME }}-${{ inputs.version }}.zip
-          asset_name: ${{ env.PROJECT_NAME }}-${{ inputs.version }}.zip
+          asset_path: ${{ env.PROJECT_NAME }}-windows-${{ inputs.version }}.zip
+          asset_name: ${{ env.PROJECT_NAME }}-windows-${{ inputs.version }}.zip
+          asset_content_type: application/zip
+      - name: Upload MacOS Release Asset
+        id: upload_release_asset_macos
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ${{ env.PROJECT_NAME }}-macos-${{ inputs.version }}.zip
+          asset_name: ${{ env.PROJECT_NAME }}-macos-${{ inputs.version }}.zip
           asset_content_type: application/zip
 
 
